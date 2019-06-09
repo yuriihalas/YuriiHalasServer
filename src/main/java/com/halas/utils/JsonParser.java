@@ -14,16 +14,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public final class JsonParser {
     private static final Logger LOG = LogManager.getLogger(JsonParser.class);
     private static final String PATH_TO_FILE = "src/main/resources/copter.json";
+    private static final Position DEFAULT_POSITION = new Position(0, 0, 0);
     private static JSONObject jsonObject;
-
-    static {
-        createInstanceJsonObject();
-    }
 
     private JsonParser() {
     }
@@ -32,6 +30,7 @@ public final class JsonParser {
      * note that previous data in file will be destroyed.
      */
     public static void writeCopterToJson(List<Copter> copters) {
+        createInstanceJsonObject();
         JSONObject jObj = new JSONObject();
         JSONArray arrCopters = new JSONArray();
         for (Copter copter : copters) {
@@ -48,11 +47,17 @@ public final class JsonParser {
         copterObj.put("name", cpt.getName());
 
         JSONObject objectPos = new JSONObject();
-        objectPos.put("x", cpt.getPosition().getCoordinateX());
-        objectPos.put("y", cpt.getPosition().getCoordinateY());
-        objectPos.put("z", cpt.getPosition().getCoordinateZ());
-
+        setValidPosition(cpt);
+        objectPos.put("coordinateX", cpt.getPosition().getCoordinateX());
+        objectPos.put("coordinateY", cpt.getPosition().getCoordinateY());
+        objectPos.put("coordinateZ", cpt.getPosition().getCoordinateZ());
         copterObj.put("position", objectPos);
+    }
+
+    private static void setValidPosition(Copter copter) {
+        if (Objects.isNull((copter.getPosition()))) {
+            copter.setPosition(DEFAULT_POSITION);
+        }
     }
 
     private static void appendToJson(JSONObject jObj) {
@@ -66,13 +71,12 @@ public final class JsonParser {
     }
 
     public static List<Copter> readAllCopters() {
+        createInstanceJsonObject();
         List<Copter> copters = new ArrayList<>();
         int sizeCopters = getAmountCopters();
-        LOG.debug("size: " + sizeCopters);
         for (int i = 0; i < sizeCopters; i++) {
             copters.add(i, getCopterByIndex(i));
         }
-        LOG.debug(copters);
         return copters;
     }
 
@@ -107,9 +111,7 @@ public final class JsonParser {
     }
 
     private static Position getPositionByIndex(int index) {
-        Position position = getPositionFromJson(index);
-        LOG.debug(position);
-        return position;
+        return getPositionFromJson(index);
     }
 
     private static int getAmountCopters() {
@@ -129,9 +131,9 @@ public final class JsonParser {
     }
 
     private static Position getPositionFromJson(int index) {
-        double posX = Double.parseDouble(getPosition(index, "x"));
-        double posY = Double.parseDouble(getPosition(index, "y"));
-        double posZ = Double.parseDouble(getPosition(index, "z"));
+        double posX = Double.parseDouble(getPosition(index, "coordinateX"));
+        double posY = Double.parseDouble(getPosition(index, "coordinateY"));
+        double posZ = Double.parseDouble(getPosition(index, "coordinateZ"));
         return new Position(posX, posY, posZ);
     }
 }

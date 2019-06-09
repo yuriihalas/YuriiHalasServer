@@ -1,6 +1,6 @@
 package com.halas.exeption;
 
-public class MaximumDistanceExceededException extends Exception{
+public class MaximumDistanceExceededException extends Exception {
 
     public MaximumDistanceExceededException() {
         super();
