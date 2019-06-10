@@ -15,11 +15,5 @@ public interface CommonCopterDAO {
 
     boolean changePositionById(int id, Position newPosition) throws MaximumDistanceExceededException;
 
-    boolean goUp(int idCopter) throws MaximumDistanceExceededException;
-
-    boolean goDown(int idCopter) throws MaximumDistanceExceededException;
-
     boolean goByDegree(int idCopter, double degree) throws MaximumDistanceExceededException;
-
-    boolean holdPosition(int idCopter);
 }

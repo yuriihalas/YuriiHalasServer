@@ -9,6 +9,5 @@ public class ErrorHelper {
     public static void outputError(final Logger LOG, Exception e) {
         LOG.error("Class: " + e.getClass());
         LOG.error("Message: " + e.getMessage());
-        LOG.error(e.getStackTrace());
     }
 }

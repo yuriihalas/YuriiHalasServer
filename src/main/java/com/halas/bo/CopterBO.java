@@ -4,11 +4,18 @@ import com.halas.dao.CopterDAO;
 import com.halas.exeption.MaximumDistanceExceededException;
 import com.halas.model.Copter;
 import com.halas.model.Position;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Objects;
+
+import static com.halas.consts.CopterConstCommon.MOVE_COPTER_STEP;
+import static com.halas.consts.CopterConstCommon.NOT_EXIST_COPTER;
+import static com.halas.utils.JsonParser.readAllCopters;
 
 public class CopterBO {
-
+    private static final Logger LOG = LogManager.getLogger(CopterBO.class);
     private CopterDAO copterDao;
 
     public CopterBO() {
@@ -31,19 +38,53 @@ public class CopterBO {
         return copterDao.changePositionById(id, newPosition);
     }
 
-    public boolean moveUp(int idCopter) throws MaximumDistanceExceededException {
-        return copterDao.goUp(idCopter);
-    }
-
-    public boolean moveDown(int idCopter) throws MaximumDistanceExceededException {
-        return copterDao.goDown(idCopter);
-    }
-
     public boolean moveByDegree(int idCopter, double degree) throws MaximumDistanceExceededException {
         return copterDao.goByDegree(idCopter, degree);
     }
 
+    public boolean moveUp(int idCopter) throws MaximumDistanceExceededException {
+        LOG.info("method goUp..");
+        List<Copter> copters = readAllCopters();
+        Copter copterForMove = copterDao.findCopterById(copters, idCopter);
+        if (Objects.nonNull(copterForMove)) {
+            double newZ = copterForMove.getPosition().getCoordinateZ() + MOVE_COPTER_STEP;
+            Position newPosition = copterForMove.getPosition();
+            newPosition.setCoordinateZ(newZ);
+            copterDao.changePosition(copters, copterForMove, newPosition);
+            LOG.info(String.format("Successfully went up copter with id: %s!", idCopter));
+            return true;
+        }
+        LOG.warn(String.format(NOT_EXIST_COPTER, idCopter));
+        return false;
+
+    }
+
+    public boolean moveDown(int idCopter) throws MaximumDistanceExceededException {
+        LOG.info("method goDown..");
+        List<Copter> copters = readAllCopters();
+        Copter copterForMove = copterDao.findCopterById(copters, idCopter);
+        if (Objects.nonNull(copterForMove)) {
+            double newZ = copterForMove.getPosition().getCoordinateZ() - MOVE_COPTER_STEP;
+            Position newPosition = copterForMove.getPosition();
+            newPosition.setCoordinateZ(newZ);
+            copterDao.changePosition(copters, copterForMove, newPosition);
+            LOG.info(String.format("Successfully went down copter with id: %s!", idCopter));
+            return true;
+        }
+        LOG.warn(String.format(NOT_EXIST_COPTER, idCopter));
+        return false;
+    }
+
     public boolean standStill(int idCopter) {
-        return copterDao.holdPosition(idCopter);
+        LOG.info("method holdPosition");
+        List<Copter> copters = readAllCopters();
+        Copter copter = copterDao.findCopterById(copters, idCopter);
+        return Objects.nonNull(copter);
+    }
+
+    public Copter findCopterById(int idCopter) {
+        LOG.info("method findCopterById");
+        List<Copter> copters = readAllCopters();
+        return copterDao.findCopterById(copters, idCopter);
     }
 }

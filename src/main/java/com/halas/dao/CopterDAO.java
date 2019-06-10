@@ -10,15 +10,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.Objects;
 
+import static com.halas.consts.CopterConstCommon.*;
 import static com.halas.utils.JsonParser.readAllCopters;
 import static com.halas.utils.JsonParser.writeCopterToJson;
 
 public class CopterDAO implements CommonCopterDAO {
     private static final Logger LOG = LogManager.getLogger(CopterDAO.class);
-    private static final String NOT_EXIST_COPTER = "Copter with id %d not exist.";
-    private static final double DISTANCE_MAX = 100;
-    private static final double MOVE_COPTER_STEP = 15;
-    private static final Position MY_POS = new Position(0, 0, 0);
 
     @Override
     public boolean createCopter(Copter newCopter) {
@@ -57,46 +54,11 @@ public class CopterDAO implements CommonCopterDAO {
     }
 
     @Override
-    public boolean changePositionById(int id, Position newPosition) throws MaximumDistanceExceededException {
+    public boolean changePositionById(int idCopter, Position newPosition) throws MaximumDistanceExceededException {
         List<Copter> copters = readAllCopters();
-        Copter copterChange = findCopterById(copters, id);
-        if (Objects.isNull((copterChange))) {
-            return false;
-        }
-        return changePosition(copters, copterChange, newPosition);
-    }
-
-    @Override
-    public boolean goUp(int idCopter) throws MaximumDistanceExceededException {
-        LOG.info("method goUp..");
-        List<Copter> copters = readAllCopters();
-        Copter copterForMove = findCopterById(copters, idCopter);
-        if (Objects.nonNull(copterForMove)) {
-            double newZ = copterForMove.getPosition().getCoordinateZ() + MOVE_COPTER_STEP;
-            Position newPosition = copterForMove.getPosition();
-            newPosition.setCoordinateZ(newZ);
-            copterForMove.setPosition(newPosition);
-            changePosition(copters, copterForMove, newPosition);
-            LOG.info(String.format("Successfully went up copter with id: %s!", idCopter));
-            return true;
-        }
-        LOG.warn(String.format(NOT_EXIST_COPTER, idCopter));
-        return false;
-    }
-
-    @Override
-    public boolean goDown(int idCopter) throws MaximumDistanceExceededException {
-        LOG.info("method goDown..");
-        List<Copter> copters = readAllCopters();
-        Copter copterForMove = findCopterById(copters, idCopter);
-        if (Objects.nonNull(copterForMove)) {
-            double newZ = copterForMove.getPosition().getCoordinateZ() - MOVE_COPTER_STEP;
-            Position newPosition = copterForMove.getPosition();
-            newPosition.setCoordinateZ(newZ);
-            copterForMove.setPosition(newPosition);
-            changePosition(copters, copterForMove, newPosition);
-            LOG.info(String.format("Successfully went down copter with id: %s!", idCopter));
-            return true;
+        Copter copterChange = findCopterById(copters, idCopter);
+        if (Objects.nonNull((copterChange))) {
+            return changePosition(copters, copterChange, newPosition);
         }
         LOG.warn(String.format(NOT_EXIST_COPTER, idCopter));
         return false;
@@ -108,12 +70,8 @@ public class CopterDAO implements CommonCopterDAO {
         List<Copter> copters = readAllCopters();
         Copter copterForMove = findCopterById(copters, idCopter);
         if (Objects.nonNull(copterForMove)) {
-            double newX = ParserPolarSystem.getCartesianX(MOVE_COPTER_STEP, degree);
-            double newY = ParserPolarSystem.getCartesianY(MOVE_COPTER_STEP, degree);
             Position newPosition = copterForMove.getPosition();
-            newPosition.setCoordinateX(newX);
-            newPosition.setCoordinateY(newY);
-            copterForMove.setPosition(newPosition);
+            setNewPos(copterForMove, degree, newPosition);
             changePosition(copters, copterForMove, newPosition);
             LOG.info(String.format("Successfully go by degree copter with id: %s and degree: %f!", idCopter, degree));
             return true;
@@ -122,15 +80,20 @@ public class CopterDAO implements CommonCopterDAO {
         return false;
     }
 
-    @Override
-    public boolean holdPosition(int idCopter) {
-        LOG.info("method holdPosition");
-        List<Copter> copters = readAllCopters();
-        Copter copter = findCopterById(copters, idCopter);
-        return Objects.nonNull(copter);
+    private void setNewPos(Copter copterForMove, double degree, Position newPosition) {
+        double oldX = copterForMove.getPosition().getCoordinateX();
+        double oldY = copterForMove.getPosition().getCoordinateY();
+        double newX = ParserPolarSystem.getCartesianX(MOVE_COPTER_STEP, degree) + oldX;
+        double newY = ParserPolarSystem.getCartesianY(MOVE_COPTER_STEP, degree) + oldY;
+        newPosition.setCoordinateX(newX);
+        newPosition.setCoordinateY(newY);
     }
 
-    private boolean changePosition(List<Copter> copters, Copter copterChange, Position newPosition)
+    public Copter findCopterById(List<Copter> copters, int idCopter) {
+        return copters.stream().filter(c -> c.getId().equals(idCopter)).findFirst().orElse(null);
+    }
+
+    public boolean changePosition(List<Copter> copters, Copter copterChange, Position newPosition)
             throws MaximumDistanceExceededException {
         if (!isCopterAbleToMoveNewPoss(MY_POS, newPosition)) {
             String mess = String.format("Copter with id: %d, can't fly so far, max distance is %s!",
@@ -147,9 +110,5 @@ public class CopterDAO implements CommonCopterDAO {
     private boolean isCopterAbleToMoveNewPoss(Position myPosition, Position positionCopter) {
         double distance = myPosition.getDistance(positionCopter);
         return distance < DISTANCE_MAX;
-    }
-
-    private Copter findCopterById(List<Copter> copters, int idCopter) {
-        return copters.stream().filter(c -> c.getId().equals(idCopter)).findFirst().orElse(null);
     }
 }
