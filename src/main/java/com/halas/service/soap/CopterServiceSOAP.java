@@ -37,4 +37,7 @@ public interface CopterServiceSOAP {
 
     @WebMethod
     boolean holdPosition(int idCopter) throws NoSuchCopterIdException;
+
+    @WebMethod
+    Copter findCopter(int idCopter) throws NoSuchCopterIdException;
 }

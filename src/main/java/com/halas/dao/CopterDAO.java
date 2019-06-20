@@ -34,7 +34,7 @@ public class CopterDAO implements CommonCopterDAO {
 
     @Override
     public List<Copter> getAllCopters() {
-        LOG.info("method readAllCopters..");
+        LOG.info("method getAllCopters..");
         return readAllCopters();
     }
 
@@ -55,9 +55,12 @@ public class CopterDAO implements CommonCopterDAO {
 
     @Override
     public boolean changePositionById(int idCopter, Position newPosition) throws MaximumDistanceExceededException {
+        LOG.info("method changePositionById..");
         List<Copter> copters = readAllCopters();
         Copter copterChange = findCopterById(copters, idCopter);
         if (Objects.nonNull((copterChange))) {
+            LOG.info(String.format("Successfully changed position copter with id %d to new position {%s}..",
+                    idCopter, newPosition));
             return changePosition(copters, copterChange, newPosition);
         }
         LOG.warn(String.format(NOT_EXIST_COPTER, idCopter));
@@ -90,11 +93,13 @@ public class CopterDAO implements CommonCopterDAO {
     }
 
     public Copter findCopterById(List<Copter> copters, int idCopter) {
+        LOG.info("method findCopterById..");
         return copters.stream().filter(c -> c.getId().equals(idCopter)).findFirst().orElse(null);
     }
 
     public boolean changePosition(List<Copter> copters, Copter copterChange, Position newPosition)
             throws MaximumDistanceExceededException {
+        LOG.info("method changePosition..");
         if (!isCopterAbleToMoveNewPoss(MY_POS, newPosition)) {
             String mess = String.format("Copter with id: %d, can't fly so far, max distance is %s!",
                     copterChange.getId(), DISTANCE_MAX);

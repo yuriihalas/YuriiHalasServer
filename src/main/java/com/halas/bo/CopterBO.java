@@ -23,27 +23,32 @@ public class CopterBO {
     }
 
     public boolean insertCopter(Copter copter) {
+        LOG.info("method insertCopter..");
         return copterDao.createCopter(copter);
     }
 
     public List<Copter> getAllCopters() {
+        LOG.info("method getAllCopters..");
         return copterDao.getAllCopters();
     }
 
     public boolean deleteCopter(int id) {
+        LOG.info("method deleteCopter..");
         return copterDao.deleteCopterById(id);
     }
 
     public boolean updatePositionById(int id, Position newPosition) throws MaximumDistanceExceededException {
+        LOG.info("method updatePositionById..");
         return copterDao.changePositionById(id, newPosition);
     }
 
     public boolean moveByDegree(int idCopter, double degree) throws MaximumDistanceExceededException {
+        LOG.info("method moveByDegree..");
         return copterDao.goByDegree(idCopter, degree);
     }
 
     public boolean moveUp(int idCopter) throws MaximumDistanceExceededException {
-        LOG.info("method goUp..");
+        LOG.info("method moveUp..");
         List<Copter> copters = readAllCopters();
         Copter copterForMove = copterDao.findCopterById(copters, idCopter);
         if (Objects.nonNull(copterForMove)) {
@@ -60,7 +65,7 @@ public class CopterBO {
     }
 
     public boolean moveDown(int idCopter) throws MaximumDistanceExceededException {
-        LOG.info("method goDown..");
+        LOG.info("method moveDown..");
         List<Copter> copters = readAllCopters();
         Copter copterForMove = copterDao.findCopterById(copters, idCopter);
         if (Objects.nonNull(copterForMove)) {
@@ -76,7 +81,7 @@ public class CopterBO {
     }
 
     public boolean standStill(int idCopter) {
-        LOG.info("method holdPosition");
+        LOG.info("method standStill");
         List<Copter> copters = readAllCopters();
         Copter copter = copterDao.findCopterById(copters, idCopter);
         return Objects.nonNull(copter);

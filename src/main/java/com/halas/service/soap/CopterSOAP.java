@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.jws.WebService;
 import java.util.List;
+import java.util.Objects;
 
 
 @WebService(endpointInterface = "com.halas.service.soap.CopterServiceSOAP")
@@ -101,12 +102,24 @@ public class CopterSOAP implements CopterServiceSOAP {
     @Override
     public boolean holdPosition(int idCopter)
             throws NoSuchCopterIdException {
-        LOG.info("method ");
+        LOG.info("method holdPosition.");
         if (!copterBo.standStill(idCopter)) {
             LOG.warn(NoSuchCopterIdException.class.getSimpleName());
             throw new NoSuchCopterIdException();
         }
         LOG.info(String.format("Successfully holdPosition copter with id: %d", idCopter));
         return true;
+    }
+
+    @Override
+    public Copter findCopter(int idCopter) throws NoSuchCopterIdException {
+        LOG.info("method findCopter.");
+        Copter foundedCopter = copterBo.findCopterById(idCopter);
+        if(Objects.isNull(foundedCopter)){
+            LOG.warn(NoSuchCopterIdException.class.getSimpleName());
+            throw new NoSuchCopterIdException();
+        }
+        LOG.info(String.format("Successfully founded copter with id: %d", idCopter));
+        return foundedCopter;
     }
 }

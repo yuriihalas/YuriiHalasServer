@@ -37,10 +37,22 @@ public class CopterREST {
         if (copters.isEmpty()) {
             LOG.error(EMPTY_LIST_COPTERS);
             CustomError customError = new CustomError(EMPTY_LIST_COPTERS);
+            return new ResponseEntity<>(customError, HttpStatus.NO_CONTENT);
+        }
+        LOG.info(SUCCESS_ACTION);
+        return new ResponseEntity<>(copterArray, HttpStatus.ACCEPTED);
+    }
+
+    @RequestMapping(value = "{copter-id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> findCopter(@PathVariable("copter-id") Integer id) {
+        Copter copter = copterBO.findCopterById(id);
+        if (Objects.isNull(copter)) {
+            LOG.error(String.format(FAILURE_FORMAT, ID_NOT_EXISTS));
+            CustomError customError = new CustomError(String.format(FAILURE_FORMAT, ID_NOT_EXISTS));
             return new ResponseEntity<>(customError, HttpStatus.BAD_REQUEST);
         }
         LOG.info(SUCCESS_ACTION);
-        return new ResponseEntity<>(copterArray, HttpStatus.OK);
+        return new ResponseEntity<>(copter, HttpStatus.FOUND);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
