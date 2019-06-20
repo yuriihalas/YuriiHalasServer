@@ -21,7 +21,7 @@ public class CopterDAO implements CommonCopterDAO {
     public boolean createCopter(Copter newCopter) {
         LOG.info("method creteCopter..");
         List<Copter> copters = readAllCopters();
-        copters.forEach(LOG::info);
+
         if (Objects.isNull(findCopterById(copters, newCopter.getId()))) {
             copters.add(newCopter);
             writeCopterToJson(copters);

@@ -1,9 +1,12 @@
 package com.halas.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Copter {
-    private int id;
+@XmlRootElement(name = "copter")
+public class Copter implements Serializable {
+    private Integer id;
     private String name;
     private Position position;
 
@@ -15,7 +18,7 @@ public class Copter {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -40,7 +43,7 @@ public class Copter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Copter copter = (Copter) o;
-        return id == copter.id &&
+        return Objects.equals(id, copter.id) &&
                 Objects.equals(name, copter.name) &&
                 Objects.equals(position, copter.position);
     }

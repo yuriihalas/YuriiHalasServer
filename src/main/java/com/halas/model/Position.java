@@ -1,8 +1,9 @@
 package com.halas.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Position {
+public class Position implements Serializable {
     private double coordinateX;
     private double coordinateY;
     private double coordinateZ;
@@ -40,7 +41,7 @@ public class Position {
         this.coordinateZ = coordinateZ;
     }
 
-    public double getDistance(Position position){
+    public double getDistance(Position position) {
         return Math.sqrt(Math.pow(coordinateX - position.getCoordinateX(), 2) +
                 Math.pow(coordinateY - position.getCoordinateY(), 2) +
                 Math.pow(coordinateZ - position.getCoordinateZ(), 2));

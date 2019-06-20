@@ -14,13 +14,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
 
 public final class JsonParser {
     private static final Logger LOG = LogManager.getLogger(JsonParser.class);
     private static final String PATH_TO_FILE = "src/main/resources/copter.json";
-    private static final Position DEFAULT_POSITION = new Position(0, 0, 0);
     private static JSONObject jsonObject;
 
     private JsonParser() {
@@ -45,19 +42,11 @@ public final class JsonParser {
     private static void addCopterToJson(JSONObject copterObj, Copter cpt) {
         copterObj.put("id", cpt.getId());
         copterObj.put("name", cpt.getName());
-
         JSONObject objectPos = new JSONObject();
-        setValidPosition(cpt);
         objectPos.put("coordinateX", cpt.getPosition().getCoordinateX());
         objectPos.put("coordinateY", cpt.getPosition().getCoordinateY());
         objectPos.put("coordinateZ", cpt.getPosition().getCoordinateZ());
         copterObj.put("position", objectPos);
-    }
-
-    private static void setValidPosition(Copter copter) {
-        if (Objects.isNull((copter.getPosition()))) {
-            copter.setPosition(DEFAULT_POSITION);
-        }
     }
 
     private static void appendToJson(JSONObject jObj) {

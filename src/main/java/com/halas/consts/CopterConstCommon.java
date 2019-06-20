@@ -10,5 +10,4 @@ public class CopterConstCommon {
 
     private CopterConstCommon() {
     }
-
 }
