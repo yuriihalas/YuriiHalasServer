@@ -40,7 +40,7 @@ public class CopterREST {
             return new ResponseEntity<>(customError, HttpStatus.NO_CONTENT);
         }
         LOG.info(SUCCESS_ACTION);
-        return new ResponseEntity<>(copterArray, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(copterArray, HttpStatus.OK);
     }
 
     @RequestMapping(value = "{copter-id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
