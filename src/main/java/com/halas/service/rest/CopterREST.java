@@ -30,7 +30,7 @@ public class CopterREST {
         copterBO = new CopterBO();
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllCopters() {
         List<Copter> copters = copterBO.getAllCopters();
         CopterArray copterArray = new CopterArray(copters);
